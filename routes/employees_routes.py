@@ -3,13 +3,13 @@ from typing import List
 
 from sqlmodel import Session, select
 
-from models.jobs_models import (
-    Employee,
+from models.employee_models import (
     EmployeeCreate,
     EmployeeRead,
     EmployeeReadWithJob,
     EmployeeUpdate,
 )
+from models.db_models import Employee
 from models.db import get_session
 
 

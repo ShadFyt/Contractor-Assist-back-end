@@ -2,7 +2,7 @@ import fastapi
 import uvicorn
 
 from models.db import create_db_and_tables
-from models.jobs_models import Job, Employee
+from models.db_models import Job, Employee, TimeEntries
 from routes import employees_routes, job_routes, time_entries_routes
 
 
