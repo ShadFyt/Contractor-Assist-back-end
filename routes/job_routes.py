@@ -3,13 +3,13 @@ from sqlmodel import Session, select
 from typing import List
 from models.db import get_session
 
-from models.jobs_models import Job, JobCreate, JobRead, JobReadWithEmployees, JobUpdate
+from models.jobs_models import Job, JobCreate, JobRead, JobReadWithTimes, JobUpdate
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
 @router.get(
-    "/", response_model=List[JobReadWithEmployees], status_code=status.HTTP_202_ACCEPTED
+    "/", response_model=List[JobReadWithTimes], status_code=status.HTTP_202_ACCEPTED
 )
 def get_all_jobs(session: Session = Depends(get_session)):
     return session.exec(select(Job)).all()

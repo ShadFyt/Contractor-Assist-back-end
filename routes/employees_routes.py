@@ -16,7 +16,7 @@ from models.db import get_session
 router = APIRouter(prefix="/employees", tags=["employees"])
 
 
-@router.get("/", response_model=List[EmployeeReadWithJob])
+@router.get("/", response_model=List[EmployeeRead])
 async def show_all_employees(session: Session = Depends(get_session)):
     return session.exec(select(Employee)).all()
 
