@@ -1,23 +1,8 @@
-from typing import Optional, List, TYPE_CHECKING
-from sqlmodel import SQLModel, Relationship, Field
+from typing import Optional
+from sqlmodel import SQLModel
 
-# from .jobs_models import JobRead
-
-
-if TYPE_CHECKING:
-    from .time_entry_models import TimeEntries
-
-
-class EmployeeBase(SQLModel):
-    first_name: str
-    last_name: str
-    birth_date: str
-    pay_rate: float
-
-
-class Employee(EmployeeBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    time_entries: List["TimeEntries"] = Relationship(back_populates="employee")
+from .base_models import EmployeeBase
+from .jobs_models import JobRead
 
 
 class EmployeeCreate(EmployeeBase):
@@ -46,5 +31,5 @@ class EmployeeUpdate(EmployeeBase):
     pass
 
 
-# class EmployeeReadWithJob(EmployeeRead):
-#     job: Optional[JobRead] = None
+class EmployeeReadWithJob(EmployeeRead):
+    job: Optional[JobRead] = None

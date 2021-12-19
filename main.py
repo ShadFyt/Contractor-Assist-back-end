@@ -2,16 +2,15 @@ import fastapi
 import uvicorn
 
 from models.db import create_db_and_tables
-from models.jobs_models import Job
-from models.employee_models import Employee
-from models.time_entry_models import TimeEntries
-from routes import employees_routes, job_routes, time_entries_routes
+from models.db_models import Job, Employee, TimeEntries, Task
+from routes import employees_routes, job_routes, time_entries_routes, task_routes
 
 
 app = fastapi.FastAPI()
 app.include_router(employees_routes.router)
 app.include_router(job_routes.router)
 app.include_router(time_entries_routes.router)
+app.include_router(task_routes.router)
 
 
 def main():

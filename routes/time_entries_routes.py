@@ -1,16 +1,16 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from typing import List
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from models.time_entry_models import (
-    TimeEntries,
     TimeEntriesRead,
     TimeEntriesCreate,
     TimeEntriesDelete,
     TimeEntriesUpdate,
 )
-from models.employee_models import Employee
+from models.db_models import Employee, TimeEntries
+
 from models.db import get_session
 
 router = APIRouter(tags=["Time Sheet"])

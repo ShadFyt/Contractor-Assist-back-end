@@ -3,7 +3,8 @@ from sqlmodel import Session, select
 from typing import List
 from models.db import get_session
 
-from models.jobs_models import Job, JobCreate, JobRead, JobReadWithTimes, JobUpdate
+from models.jobs_models import JobCreate, JobRead, JobReadWithTimes, JobUpdate
+from models.db_models import Job
 
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])

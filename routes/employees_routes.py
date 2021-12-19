@@ -4,11 +4,12 @@ from typing import List
 from sqlmodel import Session, select
 
 from models.employee_models import (
-    Employee,
     EmployeeCreate,
     EmployeeRead,
+    EmployeeReadWithJob,
     EmployeeUpdate,
 )
+from models.db_models import Employee
 from models.db import get_session
 
 
