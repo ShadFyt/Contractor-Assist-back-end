@@ -3,19 +3,23 @@ from sqlmodel import Session, select
 from typing import List
 from models.db import get_session
 
-from models.jobs_models import JobCreate, JobRead, JobReadWithTimes, JobUpdate
+from models.jobs_models import JobCreate, JobRead, JobReadWithTasksAndTimes, JobUpdate
 from models.db_models import Job
 
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
-@router.get("/", response_model=List[JobRead], status_code=status.HTTP_202_ACCEPTED)
+@router.get(
+    "/",
+    response_model=List[JobReadWithTasksAndTimes],
+    status_code=status.HTTP_202_ACCEPTED,
+)
 def get_all_jobs(session: Session = Depends(get_session)):
     return session.exec(select(Job)).all()
 
 
-@router.get("/{job_id}", response_model=JobReadWithTimes)
+@router.get("/{job_id}", response_model=JobReadWithTasksAndTimes)
 def get_single_job(*, session: Session = Depends(get_session), job_id: int):
     job = session.get(Job, job_id)
     if not job:

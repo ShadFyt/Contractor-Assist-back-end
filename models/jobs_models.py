@@ -3,10 +3,18 @@ from typing import List
 from models.task_models import TaskRead
 from .base_models import JobBase
 from .time_entry_models import TimeEntriesRead
+from humps import camelize
+
+
+def to_camel(string):
+    return camelize(string)
 
 
 class JobRead(JobBase):
     id: int
+
+    # class Config:
+    #     alias_generator = to_camel
 
 
 class JobCreate(JobBase):
@@ -19,6 +27,7 @@ class JobCreate(JobBase):
                 "is_complete": False,
                 "start_date": "10/10/2021",
                 "finish_date": "17/10/2021",
+                "location": "24 lake Dr",
                 "job_type": "Sanding",
             }
         }
@@ -34,3 +43,8 @@ class JobReadWithTimes(JobRead):
 
 class JobReadWithTasks(JobRead):
     tasks: List[TaskRead] = []
+
+
+class JobReadWithTasksAndTimes(JobRead):
+    tasks: List[TaskRead] = []
+    time_entries: List[TimeEntriesRead] = []

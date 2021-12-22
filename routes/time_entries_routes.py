@@ -36,10 +36,10 @@ def time_entry_create(
     employee_id: int,
     time_entry: TimeEntriesCreate
 ):
-    db_time_entry = TimeEntries.from_orm(time_entry)
+    time_entry = TimeEntries.from_orm(time_entry)
     employee = session.get(Employee, employee_id)
-    employee.time_entries.append(db_time_entry)
+    employee.time_entries.append(time_entry)
     session.add(employee)
     session.commit()
     session.refresh(employee)
-    return db_time_entry
+    return time_entry

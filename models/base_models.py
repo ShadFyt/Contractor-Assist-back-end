@@ -2,6 +2,12 @@ from datetime import datetime
 from sqlmodel import SQLModel, Field
 from typing import Optional
 
+from humps import camelize
+
+
+def to_camel(string):
+    return camelize(string)
+
 
 class JobBase(SQLModel):
     job_name: Optional[str]
@@ -9,7 +15,14 @@ class JobBase(SQLModel):
     summary: Optional[str]
     start_date: Optional[str]
     finish_date: Optional[str]
+    location: str
     job_type: Optional[str]
+
+    client_id: Optional[int] = Field(default=None, foreign_key="client.id")
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class EmployeeBase(SQLModel):
@@ -17,6 +30,10 @@ class EmployeeBase(SQLModel):
     last_name: str
     birth_date: str
     pay_rate: float
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class TimeEntriesBase(SQLModel):
@@ -33,3 +50,11 @@ class TaskBase(SQLModel):
     is_complete: bool = False
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
+
+
+class ClientBase(SQLModel):
+    first_name: str
+    last_name: str
+    phone_number: str
+    address: str
+    email: str
