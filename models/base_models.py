@@ -28,6 +28,8 @@ class JobBase(SQLModel):
 class EmployeeBase(SQLModel):
     first_name: str
     last_name: str
+    email: str
+    phone_number: int
     birth_date: str
     pay_rate: float
 
@@ -56,5 +58,8 @@ class ClientBase(SQLModel):
     first_name: str
     last_name: str
     phone_number: str
-    address: str
     email: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True

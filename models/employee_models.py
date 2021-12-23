@@ -15,6 +15,8 @@ class EmployeeCreate(EmployeeBase):
                 "last_name": "Doe",
                 "birth_date": "10/11/1995",
                 "pay_rate": 20,
+                "phone_number": 8889999999,
+                "email": "fake@hotmail.com",
             }
         }
 

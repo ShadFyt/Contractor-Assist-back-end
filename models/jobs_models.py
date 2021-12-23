@@ -29,6 +29,7 @@ class JobCreate(JobBase):
                 "finish_date": "17/10/2021",
                 "location": "24 lake Dr",
                 "job_type": "Sanding",
+                "client_id": 1,
             }
         }
 
