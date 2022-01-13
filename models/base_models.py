@@ -40,11 +40,15 @@ class EmployeeBase(SQLModel):
 
 class TimeEntriesBase(SQLModel):
     date: str
-    clock_in: datetime
-    clock_out: datetime
+    clock_in: str
+    clock_out: str
     hours: Optional[int]
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
+    
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class TaskBase(SQLModel):

@@ -20,6 +20,16 @@ router = APIRouter(prefix="/employees", tags=["employees"])
 async def show_all_employees(session: Session = Depends(get_session)):
     return session.exec(select(Employee)).all()
 
+@router.get("/{employee_id}", response_model=EmployeeRead)
+async def get_employee_by_id(*, session: Session = Depends(get_session), employee_id: int):
+    db_employee = session.get(Employee, employee_id)
+    return db_employee
+
+@router.get("/name/{employee_name}", response_model=EmployeeRead)
+async def get_employee_by_name(*, session: Session = Depends(get_session), employee_name: str):
+    return session.exec(select(Employee).where(Employee.first_name == employee_name)).one_or_none()
+    
+    
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=EmployeeRead)
 def create_employee(

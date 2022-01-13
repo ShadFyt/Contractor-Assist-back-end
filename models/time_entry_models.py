@@ -1,8 +1,17 @@
 from sqlmodel import Field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from humps import camelize
 
 from .base_models import TimeEntriesBase
 
+
+if TYPE_CHECKING:
+    from models.employee_models import EmployeeRead
+
+
+def to_camel(string):
+    return camelize(string)
 
 class TimeEntriesRead(TimeEntriesBase):
     id: int
