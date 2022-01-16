@@ -56,6 +56,10 @@ class TaskBase(SQLModel):
     is_complete: bool = False
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
+    
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class ClientBase(SQLModel):

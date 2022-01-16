@@ -61,7 +61,6 @@ def job_deleted(*, session: Session = Depends(get_session), job_id: int):
     db_job = session.get(Job, job_id)
     if not db_job:
         raise HTTPException(status_code=404, detail="job not found")
-    print("from delete route")
     session.delete(db_job)
     session.commit()
     return {"delete": "accepted"}

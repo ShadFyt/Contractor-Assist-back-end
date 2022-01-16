@@ -32,7 +32,7 @@ def task_created(
     "/{task_id}", response_model=TaskRead, status_code=status.HTTP_202_ACCEPTED
 )
 def update_task(
-    *, session: Session = Depends(get_session), task_id: int, task: TaskUpdate
+    *, session: Session = Depends(get_session), task_id: int, updatedTask: TaskUpdate
 ):
     task = session.get(Task, task_id)
     if not task:
@@ -40,7 +40,7 @@ def update_task(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
         )
 
-    task_data = task.dict(exclude_unset=True)
+    task_data = updatedTask.dict(exclude_unset=True)
     for k, v in task_data.items():
         setattr(task, k, v)
 
