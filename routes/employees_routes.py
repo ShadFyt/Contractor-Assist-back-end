@@ -1,15 +1,14 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends
 from typing import List
 
-from sqlmodel import Session, select
+from sqlmodel import Session
+from services import employees_utils
 
 from models.employee_models import (
     EmployeeCreate,
     EmployeeRead,
-    EmployeeReadWithJob,
     EmployeeUpdate,
 )
-from models.db_models import Employee
 from models.db import get_session
 
 
@@ -18,28 +17,28 @@ router = APIRouter(prefix="/employees", tags=["employees"])
 
 @router.get("/", response_model=List[EmployeeRead])
 async def show_all_employees(session: Session = Depends(get_session)):
-    return session.exec(select(Employee)).all()
+    return employees_utils.get_all_employees(session)
+
 
 @router.get("/{employee_id}", response_model=EmployeeRead)
-async def get_employee_by_id(*, session: Session = Depends(get_session), employee_id: int):
-    db_employee = session.get(Employee, employee_id)
-    return db_employee
+async def get_employee_by_id(
+    *, session: Session = Depends(get_session), employee_id: int
+):
+    return employees_utils.get_single_employee(session, employee_id)
+
 
 @router.get("/name/{employee_name}", response_model=EmployeeRead)
-async def get_employee_by_name(*, session: Session = Depends(get_session), employee_name: str):
-    return session.exec(select(Employee).where(Employee.first_name == employee_name)).one_or_none()
-    
-    
+async def get_employee_by_name(
+    *, session: Session = Depends(get_session), employee_name: str
+):
+    return employees_utils.get_single_employee_by_name(session, employee_name)
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=EmployeeRead)
 def create_employee(
     *, session: Session = Depends(get_session), employee: EmployeeCreate
 ):
-    db_employee = Employee.from_orm(employee)
-    session.add(db_employee)
-    session.commit()
-    session.refresh(db_employee)
-    return db_employee
+    return employees_utils.create(session, employee)
 
 
 @router.patch(
@@ -51,29 +50,10 @@ def update_employee(
     employee_id: int,
     employee: EmployeeUpdate
 ):
-    db_employee = session.get(Employee, employee_id)
-    if not db_employee:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="employee not found"
-        )
-    employee_data = employee.dict(exclude_unset=True)
-    for k, v in employee_data.items():
-        setattr(db_employee, k, v)
-    session.add(db_employee)
-    session.commit()
-    session.refresh(db_employee)
-    return db_employee
+    return employees_utils.update(session, employee_id, employee)
 
 
 @router.delete("/{employee_id}")
 def delete_employee(*, session: Session = Depends(get_session), employee_id: int):
-
-    employee = session.get(Employee, employee_id)
-    if not employee:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found"
-        )
-
-    session.delete(employee)
-    session.commit()
+    employees_utils.delete(session, employee_id)
     return {status.HTTP_204_NO_CONTENT: True}
