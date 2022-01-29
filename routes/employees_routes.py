@@ -17,21 +17,21 @@ router = APIRouter(prefix="/employees", tags=["employees"])
 
 @router.get("/", response_model=List[EmployeeRead])
 async def show_all_employees(session: Session = Depends(get_session)):
-    return employees_utils.get_all_employees(session)
+    return employees_utils.get_all(session)
 
 
 @router.get("/{employee_id}", response_model=EmployeeRead)
 async def get_employee_by_id(
     *, session: Session = Depends(get_session), employee_id: int
 ):
-    return employees_utils.get_single_employee(session, employee_id)
+    return employees_utils.get_one_by_id(session, employee_id)
 
 
 @router.get("/name/{employee_name}", response_model=EmployeeRead)
 async def get_employee_by_name(
     *, session: Session = Depends(get_session), employee_name: str
 ):
-    return employees_utils.get_single_employee_by_name(session, employee_name)
+    return employees_utils.get_one_by_name(session, employee_name)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=EmployeeRead)
@@ -50,10 +50,10 @@ def update_employee(
     employee_id: int,
     employee: EmployeeUpdate
 ):
-    return employees_utils.update(session, employee_id, employee)
+    return employees_utils.modify(session, employee_id, employee)
 
 
 @router.delete("/{employee_id}")
 def delete_employee(*, session: Session = Depends(get_session), employee_id: int):
-    employees_utils.delete(session, employee_id)
+    employees_utils.destroy(session, employee_id)
     return {status.HTTP_204_NO_CONTENT: True}

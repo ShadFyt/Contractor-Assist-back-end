@@ -5,16 +5,16 @@ from models import employee_models
 from models import db_models
 
 
-def get_all_employees(session: Session):
+def get_all(session: Session):
     print("getting employyes")
     return session.exec(select(db_models.Employee)).all()
 
 
-def get_single_employee(session: Session, employee_id: int):
+def get_one_by_id(session: Session, employee_id: int):
     return session.get(db_models.Employee, employee_id)
 
 
-def get_single_employee_by_name(session: Session, employee_name: str):
+def get_one_by_name(session: Session, employee_name: str):
     return session.exec(
         select(db_models.Employee).where(db_models.Employee.first_name == employee_name)
     ).one_or_none()
@@ -28,7 +28,7 @@ def create(session: Session, employee: employee_models.EmployeeCreate):
     return db_employee
 
 
-def update(
+def modify(
     session: Session, employee_id: int, employee: employee_models.EmployeeUpdate
 ):
     db_employee = session.get(db_models.Employee, employee_id)
@@ -45,7 +45,7 @@ def update(
     return db_employee
 
 
-def delete(session: Session, employee_id: int):
+def destroy(session: Session, employee_id: int):
     employee = session.get(db_models.Employee, employee_id)
     if not employee:
         raise HTTPException(

@@ -12,32 +12,25 @@ from models.client_models import (
 from models.db_models import Client
 from models.db import get_session
 
+from services import client_utils
+
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
 
 @router.get("/", response_model=List[ClientReadWithJob])
 async def show_all_clients(session: Session = Depends(get_session)):
-    return session.exec(select(Client)).all()
+    return client_utils.get_all(session)
 
 
 @router.get("/{client_id}", response_model=ClientRead)
 def get_client_by_id(*, session: Session = Depends(get_session), client_id: int):
-    client = session.get(Client, client_id)
-    if not client:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Client not found"
-        )
-    return client
+    return client_utils.get_one_by_id(session, client_id)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ClientRead)
 def create_client(*, session: Session = Depends(get_session), client: ClientCreate):
-    new_client = Client.from_orm(client)
-    session.add(new_client)
-    session.commit()
-    session.refresh(new_client)
-    return new_client
+    return client_utils.create(session, client)
 
 
 @router.patch(
@@ -46,29 +39,10 @@ def create_client(*, session: Session = Depends(get_session), client: ClientCrea
 def update_client(
     *, session: Session = Depends(get_session), client_id: int, client: ClientUpdate
 ):
-    db_client = session.get(Client, client_id)
-    if not db_client:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="client not found"
-        )
-    client_data = client.dict(exclude_unset=True)
-    for k, v in client_data.items():
-        setattr(db_client, k, v)
-    session.add(db_client)
-    session.commit()
-    session.refresh(db_client)
-    return db_client
+    return client_utils.modify(session, client_id, client)
 
 
 @router.delete("/{client_id}")
 def delete_client(*, session: Session = Depends(get_session), client_id: int):
-
-    client = session.get(Client, client_id)
-    if not client:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Clients not found"
-        )
-
-    session.delete(client)
-    session.commit()
+    client_utils.destroy(session, client_id)
     return {status.HTTP_204_NO_CONTENT: True}
