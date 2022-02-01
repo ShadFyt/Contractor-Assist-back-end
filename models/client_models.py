@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from .base_models import ClientBase
 from .jobs_models import JobRead
@@ -27,4 +27,5 @@ class ClientUpdate(ClientBase):
 
 
 class ClientReadWithJob(ClientBase):
+    id: int
     jobs: List[JobRead] = []

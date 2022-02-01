@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session
 from typing import List
 from models.db import get_session
 from models.task_models import TaskCreate, TaskRead, TaskUpdate

@@ -1,16 +1,15 @@
 from fastapi import status, HTTPException
 
-from sqlmodel import Session, select
-from models import client_models
+from sqlmodel import select
 from models import db_models
 
 
-def get_all(session: Session):
+def get_all(session):
     print("getting clients")
     return session.exec(select(db_models.Client)).all()
 
 
-def get_one_by_id(session: Session, client_id: int):
+def get_one_by_id(session, client_id):
     client = session.get(db_models.Client, client_id)
     if not client:
         raise HTTPException(
@@ -19,7 +18,7 @@ def get_one_by_id(session: Session, client_id: int):
     return client
 
 
-def create(session: Session, client: client_models.ClientCreate):
+def create(session, client):
     new_client = db_models.Client.from_orm(client)
     session.add(new_client)
     session.commit()
@@ -27,7 +26,7 @@ def create(session: Session, client: client_models.ClientCreate):
     return new_client
 
 
-def modify(session: Session, client_id: int, client: client_models.ClientUpdate):
+def modify(session, client_id, client):
     db_client = session.get(db_models.Client, client_id)
     if not db_client:
         raise HTTPException(
@@ -42,8 +41,8 @@ def modify(session: Session, client_id: int, client: client_models.ClientUpdate)
     return db_client
 
 
-def destroy(session: Session, client_id: int):
-    client = session.get(db_models.client, client_id)
+def destroy(session, client_id):
+    client = session.get(db_models.Client, client_id)
     if not client:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="client not found"

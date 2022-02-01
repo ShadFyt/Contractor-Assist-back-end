@@ -1,26 +1,25 @@
 from fastapi import status, HTTPException
 
-from sqlmodel import Session, select
-from models import employee_models
+from sqlmodel import select
 from models import db_models
 
 
-def get_all(session: Session):
+def get_all(session):
     print("getting employyes")
     return session.exec(select(db_models.Employee)).all()
 
 
-def get_one_by_id(session: Session, employee_id: int):
+def get_one_by_id(session, employee_id):
     return session.get(db_models.Employee, employee_id)
 
 
-def get_one_by_name(session: Session, employee_name: str):
+def get_one_by_name(session, employee_name):
     return session.exec(
         select(db_models.Employee).where(db_models.Employee.first_name == employee_name)
     ).one_or_none()
 
 
-def create(session: Session, employee: employee_models.EmployeeCreate):
+def create(session, employee):
     db_employee = db_models.Employee.from_orm(employee)
     session.add(db_employee)
     session.commit()
@@ -28,9 +27,7 @@ def create(session: Session, employee: employee_models.EmployeeCreate):
     return db_employee
 
 
-def modify(
-    session: Session, employee_id: int, employee: employee_models.EmployeeUpdate
-):
+def modify(session, employee_id, employee):
     db_employee = session.get(db_models.Employee, employee_id)
     if not db_employee:
         raise HTTPException(
@@ -45,7 +42,7 @@ def modify(
     return db_employee
 
 
-def destroy(session: Session, employee_id: int):
+def destroy(session, employee_id):
     employee = session.get(db_models.Employee, employee_id)
     if not employee:
         raise HTTPException(
