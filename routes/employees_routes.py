@@ -15,7 +15,7 @@ from models.db_models import Employee
 
 router = APIRouter(prefix="/employees", tags=["employees"])
 
-employee_dal = dal.BaseDal(Employee, "employee")
+employee_dal = dal.EmployeeDal(Employee, "employee")
 
 
 @router.get("/", response_model=List[EmployeeRead])
@@ -34,7 +34,7 @@ async def get_employee_by_id(
 async def get_employee_by_name(
     *, session: Session = Depends(get_session), employee_name: str
 ):
-    return employees_utils.get_one_by_name(session, employee_name)
+    return employee_dal.get_one_by_name(session, employee_name)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=EmployeeRead)

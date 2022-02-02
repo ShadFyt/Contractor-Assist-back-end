@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from typing import List
 
 from sqlmodel import Session, select
+from models import db_models
 
 from models.time_entry_models import (
     TimeEntriesRead,
@@ -12,27 +13,28 @@ from models.time_entry_models import (
 from models.db_models import Employee, Job, TimeEntries
 
 from models.db import get_session
+from services import dal
 
-router = APIRouter(prefix = "/time_sheet",tags=["Time Sheet"])
+router = APIRouter(prefix="/time_sheet", tags=["Time Sheet"])
+
+time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
+
 
 @router.get("/{id}", response_model=TimeEntriesRead)
 def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
-    return session.get(TimeEntries, id)
+    return time_entry_dal.get_one_by_id(session, id)
+
 
 @router.get("/employee/{employee_id}", response_model=List[TimeEntriesRead])
 def show_time_entries_by_employee(
     *, session: Session = Depends(get_session), employee_id: int
 ):
-    employee = session.get(Employee, employee_id)
-    print(employee.time_entries)
-    return employee.time_entries
+    return time_entry_dal.get_entries_by_model(session, db_models.Employee, employee_id)
+
 
 @router.get("/job/{job_id}", response_model=List[TimeEntriesRead])
-def show_time_entries_by_job(
-    *, session: Session = Depends(get_session), job_id: int
-):
-    job = session.get(Job, job_id)
-    return job.time_entries
+def show_time_entries_by_job(*, session: Session = Depends(get_session), job_id: int):
+    return time_entry_dal.get_entries_by_model(session, db_models.Job, job_id)
 
 
 @router.post(
@@ -54,8 +56,11 @@ def time_entry_create(
     session.refresh(employee)
     return time_entry
 
+
 @router.patch("/{id}", response_model=TimeEntriesRead)
-def updated_time_entry(*, session: Session = Depends(get_session), id: int, time_entry: TimeEntriesUpdate):
+def updated_time_entry(
+    *, session: Session = Depends(get_session), id: int, time_entry: TimeEntriesUpdate
+):
     db_time_entry = session.get(TimeEntries, id)
     if not db_time_entry:
         raise HTTPException(
@@ -64,13 +69,14 @@ def updated_time_entry(*, session: Session = Depends(get_session), id: int, time
     time_entry_data = time_entry.dict(exclude_unset=True)
     for k, v in time_entry_data.items():
         setattr(db_time_entry, k, v)
-    
+
     session.add(db_time_entry)
     session.commit()
     session.refresh(db_time_entry)
-    return(db_time_entry)
+    return db_time_entry
 
-@router.delete("/{id}", status_code= status.HTTP_204_NO_CONTENT)
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def time_entry_deleted(*, session: Session = Depends(get_session), id: int):
     db_time_entry = session.get(TimeEntries, id)
     if not db_time_entry:

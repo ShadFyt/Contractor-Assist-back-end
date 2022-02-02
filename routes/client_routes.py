@@ -12,12 +12,12 @@ from models.client_models import (
 from models.db import get_session
 from models import db_models
 
-from services import client_utils, dal
+from services import dal
 
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
-client_dal = dal.BaseDal(model=db_models.Client, name="client")
+client_dal = dal.ClientDal(model=db_models.Client, name="client")
 
 
 @router.get("/", response_model=List[ClientReadWithJob])
@@ -41,7 +41,7 @@ def create_client(*, session: Session = Depends(get_session), client: ClientCrea
 def update_client(
     *, session: Session = Depends(get_session), client_id: int, client: ClientUpdate
 ):
-    return client_utils.modify(session, client_id, client)
+    return client_dal.modify(session, client_id, client)
 
 
 @router.delete("/{client_id}")
