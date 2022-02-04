@@ -11,5 +11,10 @@ def create_db_and_tables():
 
 
 def get_session():
+    """opens & closes a connection(session) to the database
+
+    Yields:
+        session: establishes and maintains all conversations between your program and the databases
+    """
     with Session(engine) as session:
         yield session

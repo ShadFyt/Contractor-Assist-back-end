@@ -58,6 +58,15 @@ class BaseDal:
         session.commit()
 
     def _handle_session(self, session, db_item):
+        """Opens connection to the database
+
+        Args:
+            session (Session): establishes all conversations with the database
+            db_item (Object): An object that represents a table in the SQL database
+
+        Returns:
+            db_item: returns a unique record from the database
+        """
         session.add(db_item)
         session.commit()
         session.refresh(db_item)
@@ -93,12 +102,15 @@ class TaskDal(BaseDal):
         job = session.get(db_models.Job, job_id)
         job.tasks.append(new_task)
 
-        BaseDal._handle_session(session, job)
+        self._handle_session(session, db_item=job)
         return new_task
 
     def find_all_by_job(self, session: Session, job_id: int) -> List[db_models.Task]:
         job = session.get(db_models.Job, job_id)
         return job.tasks
+
+    def _handle_session(self, session, db_item):
+        return super()._handle_session(session, db_item)
 
 
 class TimeEntry(BaseDal):
@@ -115,7 +127,12 @@ class TimeEntry(BaseDal):
     def create(self, session: Session, post, employee_id):
         new_time_entry = self.model.from_orm(post)
         employee = session.get(db_models.Employee, employee_id)
-        employee.tasks.append(new_time_entry)
-
-        BaseDal._handle_session(session, employee)
+        if employee:
+            employee.time_entries.append(new_time_entry)
+        else:
+            print("no record of employee found")
+        self._handle_session(session, employee)
         return new_time_entry
+
+    def _handle_session(self, session, db_item):
+        return super()._handle_session(session, db_item)

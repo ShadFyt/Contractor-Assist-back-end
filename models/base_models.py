@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 from sqlmodel import SQLModel, Field
 from typing import Optional
 
@@ -13,8 +13,8 @@ class JobBase(SQLModel):
     job_name: Optional[str]
     is_complete: bool = False
     summary: Optional[str]
-    start_date: Optional[str]
-    finish_date: Optional[str]
+    start_date: Optional[date]
+    finish_date: Optional[date]
     location: str
     job_type: Optional[str]
 
@@ -30,7 +30,7 @@ class EmployeeBase(SQLModel):
     last_name: str
     email: str
     phone_number: int
-    birth_date: str
+    birth_date: date
     pay_rate: float
 
     class Config:
@@ -39,13 +39,13 @@ class EmployeeBase(SQLModel):
 
 
 class TimeEntriesBase(SQLModel):
-    date: str
+    date: date
     clock_in: str
     clock_out: str
     hours: Optional[int]
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
-    
+
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
@@ -56,7 +56,7 @@ class TaskBase(SQLModel):
     is_complete: bool = False
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
-    
+
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True

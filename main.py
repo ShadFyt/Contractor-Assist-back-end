@@ -1,4 +1,4 @@
-import fastapi
+from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,7 +13,7 @@ from routes import (
 )
 
 
-app = fastapi.FastAPI()
+app = FastAPI()
 app.include_router(employees_routes.router)
 app.include_router(job_routes.router)
 app.include_router(time_entries_routes.router)
