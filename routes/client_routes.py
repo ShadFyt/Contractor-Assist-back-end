@@ -10,14 +10,14 @@ from models.client_models import (
     ClientReadWithJob,
 )
 from models.db import get_session
-from models import db_models
+from models.db_models import Client
 
-from services import dal
+from services.dal import ClientDal
 
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
-client_dal = dal.ClientDal(model=db_models.Client, name="client")
+client_dal = ClientDal(Client, "client")
 
 
 @router.get("/", response_model=List[ClientReadWithJob])

@@ -7,11 +7,22 @@ from models import db_models
 
 
 class BaseDal:
+    """An interface to handle operations to the database. 'Data access layer'"""
+
     def __init__(self, model, name) -> None:
         self.model = model
         self.name: str = name
 
     def get_all(self, session: Session) -> List:
+        """returns list of all entries of self.model from database
+
+        Args:
+            session (Session): opens a connection to the database,
+            self.model (Table):  represent a table in the database
+
+        Returns:
+            List: returns all columns of self.table
+        """
         return session.exec(select(self.model)).all()
 
     def get_one_by_id(self, session: Session, id: int):
@@ -69,11 +80,25 @@ class ClientDal(BaseDal):
 
 
 class JobDal(BaseDal):
-    ...
+    pass
 
 
 class TaskDal(BaseDal):
-    ...
+    def __init__(self, model: db_models.Task, name: str) -> None:
+        self.model = model
+        super().__init__(model, name)
+
+    def create(self, session: Session, post, job_id):
+        new_task = self.model.from_orm(post)
+        job = session.get(db_models.Job, job_id)
+        job.tasks.append(new_task)
+
+        BaseDal._handle_session(session, job)
+        return new_task
+
+    def find_all_by_job(self, session: Session, job_id: int) -> List[db_models.Task]:
+        job = session.get(db_models.Job, job_id)
+        return job.tasks
 
 
 class TimeEntry(BaseDal):
@@ -81,6 +106,16 @@ class TimeEntry(BaseDal):
         self.model = model
         super().__init__(model, name)
 
-    def get_entries_by_model(self, session: Session, _model, _id: int):
+    def get_entries_by_model(
+        self, session: Session, _model, _id: int
+    ) -> List[db_models.TimeEntries]:
         db_model = session.get(_model, _id)
         return db_model.time_entries
+
+    def create(self, session: Session, post, employee_id):
+        new_time_entry = self.model.from_orm(post)
+        employee = session.get(db_models.Employee, employee_id)
+        employee.tasks.append(new_time_entry)
+
+        BaseDal._handle_session(session, employee)
+        return new_time_entry

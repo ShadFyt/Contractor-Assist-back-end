@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from typing import List
 
 from sqlmodel import Session
-from services import employees_utils, dal
+from services.dal import EmployeeDal
 
 from models.employee_models import (
     EmployeeCreate,
@@ -15,7 +15,7 @@ from models.db_models import Employee
 
 router = APIRouter(prefix="/employees", tags=["employees"])
 
-employee_dal = dal.EmployeeDal(Employee, "employee")
+employee_dal = EmployeeDal(Employee, "employee")
 
 
 @router.get("/", response_model=List[EmployeeRead])

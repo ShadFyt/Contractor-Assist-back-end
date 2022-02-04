@@ -1,16 +1,15 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends
 from typing import List
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 from models import db_models
 
 from models.time_entry_models import (
     TimeEntriesRead,
     TimeEntriesCreate,
-    TimeEntriesDelete,
     TimeEntriesUpdate,
 )
-from models.db_models import Employee, Job, TimeEntries
+from models.db_models import TimeEntries
 
 from models.db import get_session
 from services import dal
@@ -48,39 +47,17 @@ def time_entry_create(
     employee_id: int,
     time_entry: TimeEntriesCreate
 ):
-    time_entry = TimeEntries.from_orm(time_entry)
-    employee = session.get(Employee, employee_id)
-    employee.time_entries.append(time_entry)
-    session.add(employee)
-    session.commit()
-    session.refresh(employee)
-    return time_entry
+    return time_entry_dal.create(session, time_entry, employee_id)
 
 
 @router.patch("/{id}", response_model=TimeEntriesRead)
 def updated_time_entry(
     *, session: Session = Depends(get_session), id: int, time_entry: TimeEntriesUpdate
 ):
-    db_time_entry = session.get(TimeEntries, id)
-    if not db_time_entry:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="time entry not found"
-        )
-    time_entry_data = time_entry.dict(exclude_unset=True)
-    for k, v in time_entry_data.items():
-        setattr(db_time_entry, k, v)
-
-    session.add(db_time_entry)
-    session.commit()
-    session.refresh(db_time_entry)
-    return db_time_entry
+    return time_entry_dal.modify(session, id, time_entry)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def time_entry_deleted(*, session: Session = Depends(get_session), id: int):
-    db_time_entry = session.get(TimeEntries, id)
-    if not db_time_entry:
-        raise HTTPException(status_code=404, detail="entry not found")
-    session.delete(db_time_entry)
-    session.commit()
+    time_entry_dal.destroy(session, id)
     return {"deleted": "accepted"}
