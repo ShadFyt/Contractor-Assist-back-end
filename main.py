@@ -1,3 +1,4 @@
+import imp
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +12,7 @@ from routes import (
     task_routes,
     client_routes,
 )
+from internal import admin
 
 
 app = FastAPI()
@@ -19,6 +21,7 @@ app.include_router(job_routes.router)
 app.include_router(time_entries_routes.router)
 app.include_router(task_routes.router)
 app.include_router(client_routes.router)
+app.include_router(admin.router)
 
 origins = ["https://localhost:3000", "localhost:3000"]
 

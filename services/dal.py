@@ -85,7 +85,12 @@ class EmployeeDal(BaseDal):
 
 
 class ClientDal(BaseDal):
-    ...
+    def __init__(
+        self, model: db_models.Client = db_models.Client, name: str = "client"
+    ) -> None:
+        self.model = model
+        self.name = name
+        super().__init__(model, name)
 
 
 class JobDal(BaseDal):
