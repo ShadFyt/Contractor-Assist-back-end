@@ -1,4 +1,4 @@
-from datetime import datetime, date, time
+from datetime import date
 from sqlmodel import SQLModel, Field
 from typing import Optional
 
@@ -67,6 +67,20 @@ class ClientBase(SQLModel):
     last_name: str
     phone_number: str
     email: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class ExpenseBase(SQLModel):
+    store: str
+    price: float
+    location: Optional[str]
+    date: date
+    tax: Optional[float]
+
+    job_id: Optional[int] = Field(default=None, foreign_key="job.id")
 
     class Config:
         alias_generator = to_camel

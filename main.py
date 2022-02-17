@@ -3,13 +3,14 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from models.db import create_db_and_tables
-from models.db_models import Job, Employee, TimeEntries, Task, Client
+from models.db_models import Job, Employee, TimeEntries, Task, Client, Expense
 from routes import (
     employees_routes,
     job_routes,
     time_entries_routes,
     task_routes,
     client_routes,
+    expense_routes,
 )
 from internal import admin
 
@@ -20,6 +21,7 @@ app.include_router(job_routes.router)
 app.include_router(time_entries_routes.router)
 app.include_router(task_routes.router)
 app.include_router(client_routes.router)
+app.include_router(expense_routes.router)
 app.include_router(admin.router)
 
 origins = ["https://localhost:3000", "localhost:3000"]

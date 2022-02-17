@@ -3,21 +3,18 @@ from typing import List
 
 from sqlmodel import Session, select
 
-from models import db_models
+from models.db_models import Employee, Task, Job, TimeEntries
 from models.db import get_session
 
 
 class BaseDal:
     """An interface to handle operations to the database. 'Data access layer'"""
 
-    def __init__(
-        self, model, name: str, session: Session = Depends(get_session)
-    ) -> None:
+    def __init__(self, model, name: str) -> None:
         self.model = model
         self.name = name
-        self.session = session
 
-    def get_all(self) -> List:
+    def get_all(self, session: Session) -> List:
         """returns list of all entries of self.model from database
 
         Args:
@@ -27,7 +24,7 @@ class BaseDal:
         Returns:
             List: returns all columns of self.table
         """
-        return self.session.exec(select(self.model)).all()
+        return session.exec(select(self.model)).all()
 
     def get_one_by_id(self, session: Session, id: int):
         if db_item := session.get(self.model, id):
@@ -77,7 +74,7 @@ class BaseDal:
 
 
 class EmployeeDal(BaseDal):
-    def __init__(self, model: db_models.Employee, name: str) -> None:
+    def __init__(self, model: Employee = Employee, name: str = "employee") -> None:
         super().__init__(model, name)
         self.model = model
         self.name = name
@@ -89,52 +86,46 @@ class EmployeeDal(BaseDal):
 
 
 class ClientDal(BaseDal):
-    pass
+    ...
 
 
 class JobDal(BaseDal):
-    pass
+    ...
 
 
 class TaskDal(BaseDal):
-    def __init__(self, model: db_models.Task, name: str) -> None:
-        self.model = model
+    def __init__(self, model: Task = Task, name: str = "task") -> None:
         super().__init__(model, name)
 
     def create(self, session: Session, post, job_id):
         new_task = self.model.from_orm(post)
-        job = session.get(db_models.Job, job_id)
+        job = session.get(Job, job_id)
         job.tasks.append(new_task)
 
-        self._handle_session(session, db_item=job)
+        super()._handle_session(session, db_item=job)
         return new_task
 
-    def find_all_by_job(self, session: Session, job_id: int) -> List[db_models.Task]:
-        job = session.get(db_models.Job, job_id)
+    def find_all_by_job(self, session: Session, job_id: int) -> List[Task]:
+        job = session.get(Job, job_id)
         return job.tasks
-
-    def _handle_session(self, session, db_item):
-        return super()._handle_session(session, db_item)
 
 
 class TimeEntry(BaseDal):
-    def __init__(self, model: db_models.TimeEntries, name: str) -> None:
-        self.model = model
+    def __init__(
+        self, model: TimeEntries = TimeEntries, name: str = "time entries"
+    ) -> TimeEntries:
         super().__init__(model, name)
 
     def get_entries_by_model(
         self, session: Session, _model, _id: int
-    ) -> List[db_models.TimeEntries]:
+    ) -> List[TimeEntries]:
         db_model = session.get(_model, _id)
         return db_model.time_entries
 
     def create(self, session: Session, post, employee_id):
         new_time_entry = self.model.from_orm(post)
-        if employee := session.get(db_models.Employee, employee_id):
+        if employee := session.get(Employee, employee_id):
             employee.time_entries.append(new_time_entry)
-            self._handle_session(session, employee)
+            super()._handle_session(session, employee)
             return new_time_entry
         print("no record of employee found")
-
-    def _handle_session(self, session, db_item):
-        return super()._handle_session(session, db_item)

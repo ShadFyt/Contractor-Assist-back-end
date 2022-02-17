@@ -15,7 +15,7 @@ from models.db_models import Employee
 
 router = APIRouter(prefix="/employees", tags=["employees"])
 
-employee_dal = EmployeeDal(Employee, "employee")
+employee_dal = EmployeeDal()
 
 
 @router.get("/", response_model=List[EmployeeRead])

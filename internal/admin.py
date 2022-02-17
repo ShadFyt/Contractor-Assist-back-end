@@ -27,7 +27,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 
 def fake_hash_password(password: str):
-    return "fakehashed" + password
+    return f"fakehashed{password}"
 
 
 class User(BaseModel):

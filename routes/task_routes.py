@@ -3,13 +3,12 @@ from sqlmodel import Session
 from typing import List
 from models.db import get_session
 from models.task_models import TaskCreate, TaskRead, TaskUpdate
-from models.db_models import Task
 
 from services.dal import TaskDal
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
-taskDal = TaskDal(Task, "task")
+taskDal = TaskDal()
 
 
 @router.get("/{job_id}", response_model=List[TaskRead])
