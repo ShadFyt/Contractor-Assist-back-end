@@ -1,18 +1,39 @@
 from typing import Dict, List
+import json
+from fastapi.encoders import jsonable_encoder
 
 
-def get_recipes_name(data: Dict) -> List:
-    return [data["recipes"][i]["name"] for i in range(len(data["recipes"]))]
+def get_recipes_name(data) -> List:
+    recipes = data[0].get("recipes")
+    return [recipes[i].get("name") for i in range(len(recipes))]
 
 
-def get_single_recipe(data: Dict, recipe_name: str) -> Dict:
-    for i in range(len(data["recipes"])):
-        if data["recipes"][i]["name"] == recipe_name:
-            print(recipe_name)
-            return {
+def get_single_recipe(data, recipe_name: str) -> Dict:
+    recipes = data[0].get("recipes")
+
+    return next(
+        (
+            {
                 "details": {
-                    "ingredients": data["recipes"][i]["ingredients"],
-                    "numSteps": len(data["recipes"][i]["instructions"]),
+                    "ingredients": recipes[i]["ingredients"],
+                    "numSteps": len(recipes[i]["instructions"]),
                 }
             }
-    return {}
+            for i in range(len(recipes))
+            if recipes[i]["name"] == recipe_name
+        ),
+        {},
+    )
+
+
+def add_recipe(data, new_recipe):
+    recipes = data[0].get("recipes")
+    file = data[1]
+    list_of_recipes = get_recipes_name(data)
+    if new_recipe.name in list_of_recipes:
+        return {"error": "Recipe already exists"}
+
+    recipes.append(jsonable_encoder(new_recipe))
+    file.seek(0)
+    json.dump(data[0], file, indent=4)
+    print(new_recipe)
