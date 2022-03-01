@@ -1,5 +1,7 @@
 from fastapi import APIRouter, status, Depends
 from typing import List
+from datetime import date
+
 
 from sqlmodel import Session
 from models import db_models
@@ -22,6 +24,11 @@ time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
 @router.get("/{id}", response_model=TimeEntriesRead)
 def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
     return time_entry_dal.get_one_by_id(session, id)
+
+
+@router.get("/week/{week_of}")
+def get_time_entries_by_week(*, session: Session = Depends(get_session), week_of):
+    time_entry_dal.get_entries_by_date_range()
 
 
 @router.get("/employee/{employee_id}", response_model=List[TimeEntriesRead])

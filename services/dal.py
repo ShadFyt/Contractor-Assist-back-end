@@ -1,10 +1,10 @@
-from fastapi import status, HTTPException, Depends
+from fastapi import status, HTTPException
 from typing import List
+from datetime import datetime, date, timedelta
 
 from sqlmodel import Session, select
 
 from models.db_models import Employee, Task, Job, TimeEntries
-from models.db import get_session
 
 
 class BaseDal:
@@ -122,6 +122,9 @@ class TimeEntry(BaseDal):
         db_model = session.get(_model, _id)
         return db_model.time_entries
 
+    def get_entries_by_date_range(self):
+        self._get_date_range()
+
     def create(self, session: Session, post, employee_id):
         new_time_entry = self.model.from_orm(post)
         if employee := session.get(Employee, employee_id):
@@ -129,3 +132,13 @@ class TimeEntry(BaseDal):
             super()._handle_session(session, employee)
             return new_time_entry
         print("no record of employee found")
+
+    def _get_date_range(self):
+        number_of_days: int = 7
+        start_date = date(2022, 2, 28)
+        date_list: List = [
+            (start_date + timedelta(days=day)).isoformat()
+            for day in range(number_of_days)
+        ]
+        print(date_list)
+        return date_list
