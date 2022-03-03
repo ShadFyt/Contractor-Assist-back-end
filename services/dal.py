@@ -122,8 +122,19 @@ class TimeEntry(BaseDal):
         db_model = session.get(_model, _id)
         return db_model.time_entries
 
-    def get_entries_by_date_range(self):
-        self._get_date_range()
+    def get_entries_by_date_range(self, session: Session):
+        date_range = self._get_date_range()
+        print(date_range)
+        stmt = (
+            select(TimeEntries)
+            .where(TimeEntries.date >= date_range[0])
+            .where(TimeEntries.date <= date_range[-1])
+        )
+        results = session.exec(stmt).all()
+        for item in results:
+            print(item)
+
+        return results
 
     def create(self, session: Session, post, employee_id):
         new_time_entry = self.model.from_orm(post)
@@ -135,10 +146,8 @@ class TimeEntry(BaseDal):
 
     def _get_date_range(self):
         number_of_days: int = 7
-        start_date = date(2022, 2, 28)
-        date_list: List = [
+        start_date = date(2022, 2, 11)
+        return [
             (start_date + timedelta(days=day)).isoformat()
             for day in range(number_of_days)
         ]
-        print(date_list)
-        return date_list

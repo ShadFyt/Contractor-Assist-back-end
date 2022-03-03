@@ -26,9 +26,9 @@ def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
     return time_entry_dal.get_one_by_id(session, id)
 
 
-@router.get("/week/{week_of}")
+@router.get("/week/{week_of}", response_model=List[TimeEntriesRead])
 def get_time_entries_by_week(*, session: Session = Depends(get_session), week_of):
-    time_entry_dal.get_entries_by_date_range()
+    return time_entry_dal.get_entries_by_date_range(session)
 
 
 @router.get("/employee/{employee_id}", response_model=List[TimeEntriesRead])
