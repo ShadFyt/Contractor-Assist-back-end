@@ -9,19 +9,6 @@ def to_camel(string):
     return camelize(string)
 
 
-class EmployeeBase(SQLModel):
-    first_name: str = Field(index=True)
-    last_name: str
-    email: str
-    phone_number: int
-    birth_date: date
-    pay_rate: float
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
 class TimeEntriesBase(SQLModel):
     date: date
     clock_in: str

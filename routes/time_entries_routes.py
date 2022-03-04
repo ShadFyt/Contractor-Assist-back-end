@@ -4,16 +4,17 @@ from datetime import date
 
 
 from sqlmodel import Session
-from models import db_models
 
 from models.time_entry_models import (
     TimeEntriesRead,
     TimeEntriesCreate,
     TimeEntriesUpdate,
     TimeEntriesReadEmployee,
+    TimeEntries,
 )
-from models.db_models import TimeEntries
 
+from models.employee_models import Employee
+from models.jobs_models import Job
 from models.db import get_session
 from services import dal
 
@@ -39,12 +40,12 @@ def get_time_entries_by_week(*, session: Session = Depends(get_session), week_of
 def show_time_entries_by_employee(
     *, session: Session = Depends(get_session), employee_id: int
 ):
-    return time_entry_dal.get_entries_by_model(session, db_models.Employee, employee_id)
+    return time_entry_dal.get_entries_by_model(session, Employee, employee_id)
 
 
 @router.get("/job/{job_id}", response_model=List[TimeEntriesRead])
 def show_time_entries_by_job(*, session: Session = Depends(get_session), job_id: int):
-    return time_entry_dal.get_entries_by_model(session, db_models.Job, job_id)
+    return time_entry_dal.get_entries_by_model(session, Job, job_id)
 
 
 @router.post(

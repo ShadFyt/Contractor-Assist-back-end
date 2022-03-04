@@ -1,12 +1,36 @@
-from typing import Optional, TYPE_CHECKING
-from sqlmodel import SQLModel
+from typing import Optional, TYPE_CHECKING, List
+from sqlmodel import SQLModel, Relationship, Field
+from humps import camelize
+from datetime import date
 
-from .base_models import EmployeeBase
 
 from .time_entry_models import TimeEntriesRead
 
 if TYPE_CHECKING:
     from .time_entry_models import TimeEntriesRead
+    from db_models import TimeEntries
+
+
+def to_camel(string):
+    return camelize(string)
+
+
+class EmployeeBase(SQLModel):
+    first_name: str = Field(index=True)
+    last_name: str
+    email: str
+    phone_number: int
+    birth_date: date
+    pay_rate: float
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class Employee(EmployeeBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    time_entries: List["TimeEntries"] = Relationship(back_populates="employee")
 
 
 class EmployeeCreate(EmployeeBase):
