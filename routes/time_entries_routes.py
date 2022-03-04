@@ -10,6 +10,7 @@ from models.time_entry_models import (
     TimeEntriesRead,
     TimeEntriesCreate,
     TimeEntriesUpdate,
+    TimeEntriesReadEmployee,
 )
 from models.db_models import TimeEntries
 
@@ -23,7 +24,10 @@ time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
 
 @router.get("/{id}", response_model=TimeEntriesRead)
 def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
-    return time_entry_dal.get_one_by_id(session, id)
+    result = time_entry_dal.get_one_by_id(session, id)
+    if result.employee:
+        print("FOUND!!! ", result.employee.first_name)
+    return result
 
 
 @router.get("/week/{week_of}", response_model=List[TimeEntriesRead])

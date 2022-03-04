@@ -1,8 +1,12 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel
 
 from .base_models import EmployeeBase
-from .jobs_models import JobRead
+
+from .time_entry_models import TimeEntriesRead
+
+if TYPE_CHECKING:
+    from .time_entry_models import TimeEntriesRead
 
 
 class EmployeeCreate(EmployeeBase):
@@ -33,5 +37,5 @@ class EmployeeUpdate(EmployeeBase):
     pass
 
 
-class EmployeeReadWithJob(EmployeeRead):
-    job: Optional[JobRead] = None
+class EmployeeReadWithTimes(EmployeeRead):
+    time_entries: Optional[TimeEntriesRead] = None

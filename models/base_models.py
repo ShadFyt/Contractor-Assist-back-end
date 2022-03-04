@@ -9,24 +9,8 @@ def to_camel(string):
     return camelize(string)
 
 
-class JobBase(SQLModel):
-    job_name: Optional[str]
-    is_complete: bool = False
-    summary: Optional[str]
-    start_date: Optional[date]
-    finish_date: Optional[date]
-    location: str
-    job_type: Optional[str]
-
-    client_id: Optional[int] = Field(default=None, foreign_key="client.id")
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
 class EmployeeBase(SQLModel):
-    first_name: str
+    first_name: str = Field(index=True)
     last_name: str
     email: str
     phone_number: int
@@ -44,6 +28,8 @@ class TimeEntriesBase(SQLModel):
     clock_out: str
     hours: Optional[int]
 
+    employee_id: Optional[int] = Field(default=None, foreign_key="employee.id")
+
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
 
     class Config:
@@ -52,7 +38,7 @@ class TimeEntriesBase(SQLModel):
 
 
 class TaskBase(SQLModel):
-    task: str
+    task: str = Field(index=True)
     is_complete: bool = False
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
@@ -63,7 +49,7 @@ class TaskBase(SQLModel):
 
 
 class ClientBase(SQLModel):
-    first_name: str
+    first_name: str = Field(index=True)
     last_name: str
     phone_number: str
     email: str

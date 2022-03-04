@@ -3,8 +3,13 @@ from sqlmodel import Session
 from typing import List
 from models.db import get_session
 
-from models.jobs_models import JobCreate, JobRead, JobReadWithTasksAndTimes, JobUpdate
-from models.db_models import Job
+from models.jobs_models import (
+    JobCreate,
+    JobRead,
+    JobReadWithTasksAndTimes,
+    JobUpdate,
+    Job,
+)
 
 from services.dal import JobDal
 

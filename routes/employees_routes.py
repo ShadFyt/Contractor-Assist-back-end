@@ -7,6 +7,7 @@ from services.dal import EmployeeDal
 from models.employee_models import (
     EmployeeCreate,
     EmployeeRead,
+    EmployeeReadWithTimes,
     EmployeeUpdate,
 )
 from models.db import get_session
