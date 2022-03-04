@@ -122,19 +122,15 @@ class TimeEntry(BaseDal):
         db_model = session.get(_model, _id)
         return db_model.time_entries
 
-    def get_entries_by_date_range(self, session: Session):
-        date_range = self._get_date_range()
+    def get_entries_by_date_range(self, session: Session, week_of):
+        date_range = self._get_date_range(week_of)
         print(date_range)
         stmt = (
             select(TimeEntries)
             .where(TimeEntries.date >= date_range[0])
             .where(TimeEntries.date <= date_range[-1])
         )
-        results = session.exec(stmt).all()
-        for item in results:
-            print(item)
-
-        return results
+        return session.exec(stmt).all()
 
     def create(self, session: Session, post, employee_id):
         new_time_entry = self.model.from_orm(post)
@@ -144,9 +140,8 @@ class TimeEntry(BaseDal):
             return new_time_entry
         print("no record of employee found")
 
-    def _get_date_range(self):
+    def _get_date_range(self, start_date: date):
         number_of_days: int = 7
-        start_date = date(2022, 2, 11)
         return [
             (start_date + timedelta(days=day)).isoformat()
             for day in range(number_of_days)
