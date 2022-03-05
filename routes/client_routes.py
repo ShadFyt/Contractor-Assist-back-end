@@ -8,9 +8,9 @@ from models.client_models import (
     ClientCreate,
     ClientUpdate,
     ClientReadWithJob,
+    Client,
 )
 from models.db import get_session
-from models.db_models import Client
 
 from services.dal import ClientDal
 

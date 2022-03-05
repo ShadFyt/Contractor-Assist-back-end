@@ -11,7 +11,7 @@ from models.employee_models import (
     EmployeeUpdate,
 )
 from models.db import get_session
-from models.db_models import Employee
+from models.employee_models import Employee
 
 
 router = APIRouter(prefix="/employees", tags=["employees"])

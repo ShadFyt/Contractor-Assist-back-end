@@ -8,10 +8,10 @@ from models.expense_model import (
     ExpenseDelete,
     ExpenseRead,
     ExpenseUpdate,
+    Expense,
 )
 
 from models.db import get_session
-from models.db_models import Expense
 
 
 router = APIRouter(prefix="/expenses", tags=["expenses"])

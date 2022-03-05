@@ -3,10 +3,12 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from models.db import create_db_and_tables
-from models.db_models import Task, Client, Expense
 from models.jobs_models import Job
 from models.employee_models import Employee
 from models.time_entry_models import TimeEntries
+from models.task_models import Task
+from models.client_models import Client
+from models.expense_model import Expense
 from routes import (
     employees_routes,
     job_routes,
