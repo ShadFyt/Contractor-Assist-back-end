@@ -4,10 +4,8 @@ from datetime import datetime, date, timedelta
 
 from sqlmodel import Session, select
 
-from models.jobs_models import Job
-from models.employee_models import Employee
-from models.time_entry_models import TimeEntries
-from models.task_models import Task
+
+from models.db_models import Job, Employee, TimeEntries, Task
 
 
 class BaseDal:
