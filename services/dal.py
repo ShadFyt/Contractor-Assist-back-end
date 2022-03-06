@@ -134,8 +134,9 @@ class TimeEntry(BaseDal):
         return session.exec(stmt).all()
 
     def create(self, session: Session, post, employee_id):
-        new_time_entry = self.model.from_orm(post)
+        new_time_entry: TimeEntries = self.model.from_orm(post)
         if employee := session.get(Employee, employee_id):
+            new_time_entry.employee_name = employee.first_name
             employee.time_entries.append(new_time_entry)
             super()._handle_session(session, employee)
             return new_time_entry

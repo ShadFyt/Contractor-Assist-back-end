@@ -21,6 +21,7 @@ class TimeEntriesBase(SQLModel):
     clock_out: str
     hours: Optional[int]
 
+    employee_name: Optional[str] = None
     employee_id: Optional[int] = Field(default=None, foreign_key="employee.id")
 
     job_id: Optional[int] = Field(default=None, foreign_key="job.id")
@@ -40,11 +41,6 @@ class TimeEntries(TimeEntriesBase, table=True):
 
 class TimeEntriesRead(TimeEntriesBase):
     id: int
-    # employee: Optional["EmployeeRead"] = None
-
-
-class TimeEntriesReadEmployee(TimeEntriesRead):
-    employee: Optional["EmployeeRead"] = None
 
 
 class TimeEntriesCreate(TimeEntriesBase):

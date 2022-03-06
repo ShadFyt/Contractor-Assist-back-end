@@ -24,10 +24,10 @@ time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
 
 @router.get("/{id}", response_model=TimeEntriesRead)
 def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
-    result = time_entry_dal.get_one_by_id(session, id)
+    result: TimeEntries = time_entry_dal.get_one_by_id(session, id)
     if result.employee:
-        print("FOUND!!! ", result)
-    return result
+        print("FOUND!!! ", result.employee)
+    return {**result.dict(), "employee_name": result.employee.first_name}
 
 
 @router.get("/week/{week_of}", response_model=List[TimeEntriesRead])
@@ -59,6 +59,7 @@ def time_entry_create(
     time_entry: TimeEntriesCreate
 ):
     time_entry.hours = int(int(time_entry.clock_out[:2]) - int(time_entry.clock_in[:2]))
+    # time_entry.employee_name = time_entry.employee.first_name
     print("HOURS ARE: ", time_entry.hours)
     return time_entry_dal.create(session, time_entry, employee_id)
 
