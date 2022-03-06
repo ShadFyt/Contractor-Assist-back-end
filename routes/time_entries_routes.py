@@ -58,6 +58,8 @@ def time_entry_create(
     employee_id: int,
     time_entry: TimeEntriesCreate
 ):
+    time_entry.hours = int(int(time_entry.clock_out[:2]) - int(time_entry.clock_in[:2]))
+    print("HOURS ARE: ", time_entry.hours)
     return time_entry_dal.create(session, time_entry, employee_id)
 
 

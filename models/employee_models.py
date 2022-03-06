@@ -19,7 +19,7 @@ class EmployeeBase(SQLModel):
     first_name: str = Field(index=True)
     last_name: str
     email: str
-    phone_number: int
+    phone_number: str
     birth_date: date
     pay_rate: float
 

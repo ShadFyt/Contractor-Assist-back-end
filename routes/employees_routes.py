@@ -28,7 +28,10 @@ async def show_all_employees(session: Session = Depends(get_session)):
 async def get_employee_by_id(
     *, session: Session = Depends(get_session), employee_id: int
 ):
-    return employee_dal.get_one_by_id(session, employee_id)
+
+    employee: Employee = employee_dal.get_one_by_id(session, employee_id)
+    print("employee time sheet :", employee.time_entries[0])
+    return employee
 
 
 @router.get("/name/{employee_name}", response_model=EmployeeRead)
