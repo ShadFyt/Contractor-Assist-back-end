@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from config import settings
 
 from models.db import create_db_and_tables
 from models.db_models import *
@@ -37,6 +38,8 @@ app.add_middleware(
 
 
 def main():
+    print(settings.POSTGRES_PASSWORD)
+
     create_db_and_tables()
     uvicorn.run(app, port=8000, host="127.0.0.1")
 

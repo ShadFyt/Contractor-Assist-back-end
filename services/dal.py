@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException
 from typing import List
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 from sqlmodel import Session, select
 

@@ -3,14 +3,12 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+from config import settings
 
-engine = create_engine(sqlite_url, echo=True)
 
-# create async engine - DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-async_engine = create_async_engine(DATABASE_URL, future=True, echo=True)
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
 
 def create_db_and_tables():
@@ -28,9 +26,9 @@ def get_session():
 
 
 # TODO implement async version
-async def get_async_session() -> AsyncSession:
-    # add aiosqlite
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+# async def get_async_session() -> AsyncSession:
+#     # add aiosqlite
+#     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-    async with async_session() as session:
-        yield session
+#     async with async_session() as session:
+#         yield session

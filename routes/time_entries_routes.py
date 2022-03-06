@@ -9,7 +9,6 @@ from models.time_entry_models import (
     TimeEntriesRead,
     TimeEntriesCreate,
     TimeEntriesUpdate,
-    TimeEntriesReadEmployee,
     TimeEntries,
 )
 
@@ -27,7 +26,7 @@ time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
 def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
     result = time_entry_dal.get_one_by_id(session, id)
     if result.employee:
-        print("FOUND!!! ", result.employee.first_name)
+        print("FOUND!!! ", result)
     return result
 
 
