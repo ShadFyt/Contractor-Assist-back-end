@@ -1,3 +1,5 @@
+import os
+import psycopg2
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -9,6 +11,9 @@ from config import settings
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+conn = psycopg2.connect(DATABASE_URL, sslmode="require")
 
 
 def create_db_and_tables():
