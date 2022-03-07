@@ -1,6 +1,7 @@
 from typing import Dict, List
 import json
 from fastapi.encoders import jsonable_encoder
+from fastapi import status
 
 
 def get_recipes_name(data) -> List:
@@ -31,9 +32,9 @@ def add_recipe(data, new_recipe):
     file = data[1]
     list_of_recipes = get_recipes_name(data)
     if new_recipe.name in list_of_recipes:
-        return {"error": "Recipe already exists"}
+        return {status.HTTP_400_BAD_REQUEST: "Recipe already exists"}
 
     recipes.append(jsonable_encoder(new_recipe))
     file.seek(0)
     json.dump(data[0], file, indent=4)
-    print(new_recipe)
+    return new_recipe

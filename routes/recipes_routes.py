@@ -24,6 +24,6 @@ def read_one_recipe(*, data=Depends(get_data), recipe_name: str):
     return get_single_recipe(data, recipe_name)
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_recipe(*, data=Depends(get_data), new_recipe: Recipe):
     return add_recipe(data, new_recipe)
