@@ -32,7 +32,9 @@ def get_time_entry_by_id(*, session: Session = Depends(get_session), id: int):
 
 @router.get("/week/{week_of}", response_model=List[TimeEntriesRead])
 def get_time_entries_by_week(*, session: Session = Depends(get_session), week_of: date):
-    return time_entry_dal.get_entries_by_date_range(session, week_of)
+    results = time_entry_dal.get_entries_by_date_range(session, week_of)
+    print("results: ", [time for time in results if time.employee_id == 1])
+    return results
 
 
 @router.get("/employee/{employee_id}", response_model=List[TimeEntriesRead])
