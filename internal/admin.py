@@ -1,10 +1,13 @@
 from fastapi import APIRouter, status, Depends, HTTPException
+from sqlmodel import Session, SQLModel, Field
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from typing import List, Optional
 from config import settings
 from datetime import datetime, timedelta
+
+from models.db import get_session
 
 from pydantic import BaseModel
 
@@ -29,15 +32,27 @@ class TokenData(BaseModel):
     username: Optional[str] = None
 
 
-class User(BaseModel):
+class BaseUser(SQLModel):
     username: str
     email: Optional[str] = None
     full_name: Optional[str] = None
     disabled: Optional[bool] = None
 
 
-class UserInDB(User):
+class UserInDB(BaseUser, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
+
+    def verify_password(self, plain_password: str):
+        return pwd_context.verify(plain_password, self.hashed_password)
+
+
+class UserRead(BaseUser):
+    id: int
+
+
+class UserCreate(BaseUser):
+    password: str
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -103,14 +118,37 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+async def get_current_active_user(current_user: UserRead = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-@router.post("/", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+def create_owner(owner: UserRead, session: Session):
+    owner_obj = UserInDB(
+        username=owner.username, hashed_password=pwd_context.hash(owner.hashed_password)
+    )
+    session.add(owner_obj)
+    session.commit()
+    session.refresh(owner_obj)
+    return owner_obj
+
+
+@router.post("/")
+def create_user(user: UserCreate, session: Session = Depends(get_session)):
+    new_user = UserInDB(hashed_password=user.password, username=user.username)
+    new_user.hashed_password = get_password_hash(user.password)
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    return new_user
+
+
+@router.post("/token", response_model=Token)
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+):
+    print("data is ", form_data)
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -122,9 +160,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+    print("LOGGIN :", access_token)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/me")
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
+async def read_users_me(current_user: UserRead = Depends(get_current_active_user)):
     return current_user

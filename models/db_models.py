@@ -4,3 +4,4 @@ from .expense_model import Expense
 from .jobs_models import Job
 from .task_models import Task
 from .time_entry_models import TimeEntries
+from internal.admin import UserInDB
