@@ -36,7 +36,7 @@ class BaseUser(SQLModel):
     username: str
     email: Optional[str] = None
     full_name: Optional[str] = None
-    disabled: Optional[bool] = None
+    disabled: Optional[bool] = False
 
 
 class UserInDB(BaseUser, table=True):
@@ -58,7 +58,7 @@ class UserCreate(BaseUser):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin/token")
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -95,7 +95,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return jwt.encode(to_encode, settings.SECRET_KEY, settings.ALGORITHM)
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
+):
+    print("checking credentials")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -105,13 +108,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
+        print(token)
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except JWTError as e:
         raise credentials_exception from e
-    user = get_user(fake_users_db, username=token_data.username)
+    statement = select(UserInDB).where(UserInDB.username == token_data.username)
+    user = session.exec(statement).one_or_none()
     if user is None:
         raise credentials_exception
     return user
