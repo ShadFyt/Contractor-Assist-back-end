@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from sqlmodel import Session, SQLModel, Field
+from sqlmodel import Session, SQLModel, Field, select
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import JWTError, jwt
@@ -77,8 +77,7 @@ def get_user(db, username: str):
         return UserInDB(**user_dict)
 
 
-def authenticate_user(fake_users_db, username: str, password: str):
-    user = get_user(fake_users_db, username)
+def authenticate_user(user, password: str):
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -147,10 +146,13 @@ def create_user(user: UserCreate, session: Session = Depends(get_session)):
 @router.post("/token", response_model=Token)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(get_session),
 ):
     print("data is ", form_data)
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
-    if not user:
+    db_user = select(UserInDB).where(UserInDB.username == form_data.username)
+    user = session.exec(db_user).one_or_none()
+
+    if not user.verify_password(form_data.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
