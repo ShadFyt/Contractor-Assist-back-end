@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, Depends
 from typing import List
 
 from sqlmodel import Session
+from internal.admin import get_current_active_user
 
 from models.client_models import (
     ClientRead,
@@ -20,7 +21,11 @@ router = APIRouter(prefix="/clients", tags=["clients"])
 client_dal = ClientDal(Client, "client")
 
 
-@router.get("/", response_model=List[ClientReadWithJob])
+@router.get(
+    "/",
+    response_model=List[ClientReadWithJob],
+    dependencies=[Depends(get_current_active_user)],
+)
 async def show_all_clients(session: Session = Depends(get_session)):
     return client_dal.get_all(session)
 

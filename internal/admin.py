@@ -12,17 +12,6 @@ from models.db import get_session
 from pydantic import BaseModel
 
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    },
-}
-
-
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -63,10 +52,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin/token")
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -80,7 +65,7 @@ def get_user(db, username: str):
 def authenticate_user(user, password: str):
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not user.verify_password(password, user.hashed_password):
         return False
     return user
 
