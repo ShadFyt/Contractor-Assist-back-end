@@ -35,6 +35,9 @@ class UserInDB(BaseUser, table=True):
     def verify_password(self, plain_password: str):
         return pwd_context.verify(plain_password, self.hashed_password)
 
+    def get_password_hash(self, password):
+        return pwd_context.hash(password)
+
 
 class UserRead(BaseUser):
     id: int
@@ -54,12 +57,6 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 def get_password_hash(password):
     return pwd_context.hash(password)
-
-
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
 
 
 def authenticate_user(user, password: str):

@@ -4,6 +4,7 @@ from datetime import date
 
 
 from sqlmodel import Session
+from internal import admin
 
 from models.time_entry_models import (
     TimeEntriesRead,
@@ -17,7 +18,11 @@ from models.jobs_models import Job
 from models.db import get_session
 from services import dal
 
-router = APIRouter(prefix="/time_sheet", tags=["Time Sheet"])
+router = APIRouter(
+    prefix="/time_sheet",
+    tags=["Time Sheet"],
+    dependencies=[Depends(admin.get_current_active_user)],
+)
 
 time_entry_dal = dal.TimeEntry(TimeEntries, "time entry")
 

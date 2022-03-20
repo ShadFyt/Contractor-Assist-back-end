@@ -3,6 +3,7 @@ from typing import List
 
 from sqlmodel import Session
 from services.dal import EmployeeDal
+from internal import admin
 
 from models.employee_models import (
     EmployeeCreate,
@@ -19,7 +20,11 @@ router = APIRouter(prefix="/employees", tags=["employees"])
 employee_dal = EmployeeDal()
 
 
-@router.get("/", response_model=List[EmployeeRead])
+@router.get(
+    "/",
+    response_model=List[EmployeeRead],
+    dependencies=[Depends(admin.get_current_active_user)],
+)
 async def show_all_employees(session: Session = Depends(get_session)):
     return employee_dal.get_all(session)
 

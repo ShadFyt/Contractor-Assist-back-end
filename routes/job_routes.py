@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, Depends
 from sqlmodel import Session
 from typing import List
 from models.db import get_session
+from internal import admin
 
 from models.jobs_models import (
     JobCreate,
@@ -13,7 +14,9 @@ from models.jobs_models import (
 
 from services.dal import JobDal
 
-router = APIRouter(prefix="/jobs", tags=["jobs"])
+router = APIRouter(
+    prefix="/jobs", tags=["jobs"], dependencies=[Depends(admin.get_current_active_user)]
+)
 
 jobDal = JobDal(Job, "job")
 

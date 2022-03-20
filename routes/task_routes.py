@@ -3,6 +3,7 @@ from sqlmodel import Session
 from typing import List
 from models.db import get_session
 from models.task_models import TaskCreate, TaskRead, TaskUpdate
+from internal import admin
 
 from services.dal import TaskDal
 
@@ -11,7 +12,11 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 taskDal = TaskDal()
 
 
-@router.get("/{job_id}", response_model=List[TaskRead])
+@router.get(
+    "/{job_id}",
+    response_model=List[TaskRead],
+    dependencies=[Depends(admin.get_current_active_user)],
+)
 def get_tasks_by_job(*, session: Session = Depends(get_session), job_id: int):
     return taskDal.find_all_by_job(session, job_id)
 

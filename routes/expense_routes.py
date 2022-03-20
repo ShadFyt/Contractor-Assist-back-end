@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, Depends
 from typing import List
 
 from sqlmodel import Session
+from internal import admin
 
 from models.expense_model import (
     ExpenseCreate,
@@ -14,7 +15,11 @@ from models.expense_model import (
 from models.db import get_session
 
 
-router = APIRouter(prefix="/expenses", tags=["expenses"])
+router = APIRouter(
+    prefix="/expenses",
+    tags=["expenses"],
+    dependencies=[Depends(admin.get_current_active_user)],
+)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)

@@ -1,7 +1,6 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from config import settings
 
 from models.db import create_db_and_tables
 from models.db_models import *
