@@ -2,10 +2,10 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-from models.db import create_db_and_tables
-from models.db_models import *
+from models import db
+from .models.db_models import *
 
-from routes import (
+from .routes import (
     employees_routes,
     job_routes,
     time_entries_routes,
@@ -13,7 +13,7 @@ from routes import (
     client_routes,
     expense_routes,
 )
-from internal import admin
+from .internal import admin
 
 
 app = FastAPI()
@@ -38,7 +38,7 @@ app.add_middleware(
 
 def main():
 
-    create_db_and_tables()
+    db.create_db_and_tables()
     uvicorn.run(app, port=8000, host="127.0.0.1")
 
 
