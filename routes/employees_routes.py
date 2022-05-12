@@ -24,6 +24,7 @@ employee_dal = EmployeeDal()
     "/",
     response_model=List[EmployeeRead],
     dependencies=[Depends(admin.get_current_active_user)],
+    status_code=200,
 )
 async def show_all_employees(session: Session = Depends(get_session)):
     return employee_dal.get_all(session)

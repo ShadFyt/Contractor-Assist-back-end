@@ -3,9 +3,10 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import db
-from .models.db_models import *
+from models.db_models import *
+from config import Settings
 
-from .routes import (
+from routes import (
     employees_routes,
     job_routes,
     time_entries_routes,
@@ -13,7 +14,7 @@ from .routes import (
     client_routes,
     expense_routes,
 )
-from .internal import admin
+from internal import admin
 
 
 app = FastAPI()
@@ -45,4 +46,4 @@ def main():
 if __name__ == "__main__":
     main()
 else:
-    create_db_and_tables()
+    db.create_db_and_tables()

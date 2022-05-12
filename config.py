@@ -10,6 +10,7 @@ load_dotenv(dotenv_path=env_path)
 class Settings:
     PROJECT_NAME: str = "Contractors assist"
     PROJECT_VERSION: str = "1.0.0"
+    PROD: bool = os.getenv("PROD")
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
