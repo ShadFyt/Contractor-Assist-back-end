@@ -1,1 +1,1 @@
-web: gunicorn main:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
+web: gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
