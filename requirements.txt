@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 aiosqlite==0.17.0
 anyio==3.4.0
 asgiref==3.4.1
@@ -58,3 +59,22 @@ urllib3==1.26.7
 uvicorn==0.15.0
 watchgod==0.7
 websockets==10.1
+=======
+anyio==3.5.0
+asgiref==3.5.0
+click==8.0.4
+colorama==0.4.4
+fastapi==0.74.1
+h11==0.13.0
+httptools==0.3.0
+idna==3.3
+pydantic==1.9.0
+python-dotenv==0.19.2
+PyYAML==6.0
+sniffio==1.2.0
+starlette==0.17.1
+typing-extensions==4.1.1
+uvicorn==0.17.5
+watchgod==0.7
+websockets==10.2
+>>>>>>> 83f5bad86aa5c8c274a11ab06ef9cec469799c86
