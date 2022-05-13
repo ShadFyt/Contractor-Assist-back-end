@@ -73,6 +73,26 @@ class BaseDal:
         session.refresh(db_item)
         return db_item
 
+    def _get_date_range(self, start_date: date):
+        """takes a date, checks if date is a Monday if not Monday change date to monday.
+            ex: _get_date_range("2022-02-10")
+
+        Args:
+            start_date (date): a date object in isoformat
+            ex: "YYY-MM=DD"
+
+        Returns:
+            List[date]: List of 7 dates starting from a Monday
+            ex: ['2022-02-07', '2022-02-08', '2022-02-09', '2022-02-10', '2022-02-11', '2022-02-12', '2022-02-13']
+        """
+        number_of_days: int = 7
+        if start_date.weekday() > 0:
+            start_date -= timedelta(days=start_date.weekday())
+        return [
+            (start_date + timedelta(days=day)).isoformat()
+            for day in range(number_of_days)
+        ]
+
 
 class EmployeeDal(BaseDal):
     def __init__(self, model: Employee = Employee, name: str = "employee") -> None:
@@ -124,7 +144,7 @@ class TimeEntry(BaseDal):
         return db_model.time_entries
 
     def get_entries_by_date_range(self, session: Session, week_of):
-        date_range = self._get_date_range(week_of)
+        date_range = super()._get_date_range(week_of)
         print(date_range)
         stmt = (
             select(TimeEntries)
@@ -141,23 +161,3 @@ class TimeEntry(BaseDal):
             super()._handle_session(session, employee)
             return new_time_entry
         print("no record of employee found")
-
-    def _get_date_range(self, start_date: date):
-        """takes a date, checks if date is a Monday if not Monday change date to monday.
-            ex: _get_date_range("2022-02-10")
-
-        Args:
-            start_date (date): a date object in isoformat
-            ex: "YYY-MM=DD"
-
-        Returns:
-            List[date]: List of 7 dates starting from a Monday
-            ex: ['2022-02-07', '2022-02-08', '2022-02-09', '2022-02-10', '2022-02-11', '2022-02-12', '2022-02-13']
-        """
-        number_of_days: int = 7
-        if start_date.weekday() > 0:
-            start_date -= timedelta(days=start_date.weekday())
-        return [
-            (start_date + timedelta(days=day)).isoformat()
-            for day in range(number_of_days)
-        ]

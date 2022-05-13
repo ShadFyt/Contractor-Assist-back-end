@@ -1,3 +1,4 @@
+from datetime import timezone
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlmodel import Session, SQLModel, Field, select
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -70,9 +71,9 @@ def authenticate_user(user, password: str):
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode["exp"] = expire
     return jwt.encode(to_encode, settings.SECRET_KEY, settings.ALGORITHM)
 

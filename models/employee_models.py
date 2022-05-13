@@ -15,6 +15,7 @@ def to_camel(string):
     return camelize(string)
 
 
+# sourcery skip: avoid-builtin-shadow
 class EmployeeBase(SQLModel):
     first_name: str = Field(index=True)
     last_name: str
